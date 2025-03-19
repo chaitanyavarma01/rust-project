@@ -1,1 +1,1 @@
-Television, Wardrobe, Bicycle, Mobile, Painting
+television,wardrobe,bicycle,mobile,painting
