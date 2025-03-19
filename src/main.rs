@@ -6,9 +6,16 @@ use std::io::prelude::*;
 use std::io;
 
 const ALLOWED_ATTEMPTS: u8 = 5;
+
 struct Letter {
     character:char,
     revealed:bool,
+}
+
+enum GameProgress{
+    InProgress,
+    Won,
+    Lost
 }
 
 
@@ -17,7 +24,7 @@ fn main(){
     let mut turns_left = ALLOWED_ATTEMPTS;
     let mut letters = create_letter(&selected_word);
 
-
+    println!("Welcome to Hangman!");
     loop {
         println!("You have {} turns left", turns_left);
         display_function(&letters);
@@ -37,11 +44,24 @@ fn main(){
             }
 
         }
-        
+
         if !at_least_one_revealed{
             turns_left -= 1;
         }
+
+        match check_progress(turns_left, &letters) {
+            GameProgress::InProgress => continue,
+            GameProgress::Won => {
+                println!("\nCongrats! You won! ☺");
+                break;
+            }
+            GameProgress::Lost => {
+                println!("\nYou lost! ☹");
+                break;
+            }
+        }
     }
+    println!("\nGoodbye!");
 }
 
 fn selected_word() -> String {
@@ -98,4 +118,24 @@ fn read_user_input() -> char {
         }
         Err(_) => { return '*'; }
     }
+}
+
+fn check_progress(turns_left: u8, letters: &Vec<Letter>) -> GameProgress {
+    /* Determine if all letters have been revealed */
+    let mut all_revealed = true;
+    for letter in letters {
+        if !letter.revealed {
+            all_revealed = false;
+        }
+    }
+
+    if all_revealed {
+        return GameProgress::Won;
+    }
+
+    if turns_left > 0 {
+        return GameProgress::InProgress;
+    }
+
+    return GameProgress::Lost;
 }
